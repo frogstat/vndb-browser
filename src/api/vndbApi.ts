@@ -1,4 +1,15 @@
+import type {VNRESTResult} from "../types.ts";
+
 const VNDB_API_URL = "https://api.vndb.org/kana/vn"
+
+function parseApiResult(response:VNRESTResult){
+
+
+
+
+
+}
+
 
 export async function getVisualNovel(id: string){
     const options = {
@@ -9,6 +20,8 @@ export async function getVisualNovel(id: string){
     const response = await fetch(VNDB_API_URL, options);
     return await response.json();
 }
+
+
 
 getVisualNovel("v17")
     .then(console.log);
