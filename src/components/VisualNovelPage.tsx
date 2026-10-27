@@ -1,29 +1,42 @@
-import {getVisualNovel} from "../api/vndbApi.ts";
 import CharacterGallery from "./CharacterGallery.tsx";
-import {useEffect, useState} from "react";
 import VisualNovelHeader from "./VisualNovelHeader.tsx";
+import type {Image, VisualNovel} from "../types.ts";
+import {useLoaderData} from "react-router-dom";
+import ImageWrapper from "./ImageWrapper.tsx";
+import {useState} from "react";
+import ImageOverlay from "./ImageOverlay.tsx";
 
 function VisualNovelPage() {
+    const vn: VisualNovel = useLoaderData();
 
-    const [vn, setVn] = useState<any>(null);
-
-    useEffect(() => {
-        getVisualNovel("v4")
-            .then(data => setVn(data.results[0]));
-    }, [])
+    const [selectedImage, setSelectedImage] = useState<Image | null>(null);
 
     return (
         <>
-            {vn &&
-                <div>
-                    <VisualNovelHeader vn={vn}/>
-                    {vn.va.length > 0 && <CharacterGallery characters={vn.va.map((va:any) => va.character)}/>}
-                </div>
+            <div className="visual-novel-page">
+                <VisualNovelHeader vn={vn} setSelectedImage={setSelectedImage}/>
+                <CharacterGallery visualNovelId={vn.id}/>
+                <h1>Screenshots</h1>
+                {vn.screenshots.length > 0 ?
+                    <div className="screenshots-grid">
+                        {vn.screenshots.map((image, i) =>
+                            <div key={i} className="screenshot-container">
+                                <ImageWrapper image={image} selectImage={setSelectedImage} />
+                            </div>
+                        )}
+                    </div>
+                    : <p>No screenshots found.</p>
+                }
+            </div>
+            {selectedImage &&
+                <ImageOverlay
+                    image={selectedImage}
+                    disableOverlay={() => setSelectedImage(null)}
+                />
             }
         </>
     )
 }
-
 
 
 export default VisualNovelPage;

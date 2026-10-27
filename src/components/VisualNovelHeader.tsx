@@ -1,14 +1,21 @@
+import ImageWrapper from "./ImageWrapper.tsx";
+import type {Image, VisualNovel} from "../types.ts";
+
 type VisualNovelHeaderProps = {
-    vn: any
+    setSelectedImage: (image: Image) => void;
+    vn: VisualNovel,
 };
 
-function VisualNovelHeader({vn}: VisualNovelHeaderProps) {
+function VisualNovelHeader({vn, setSelectedImage}: VisualNovelHeaderProps) {
 
-    return(
+    return (
         <div className="visual-novel-header">
             <h1>{vn.title}</h1>
+            {(vn.title_ja && vn.title_ja !== vn.title) && <h1>{vn.title_ja}</h1>}
             <p>{vn.description}</p>
-            <img src={vn.image.thumbnail}/>
+            <div className="cover-image-container">
+                <ImageWrapper image={vn.image} selectImage={setSelectedImage}/>
+            </div>
         </div>
     )
 }

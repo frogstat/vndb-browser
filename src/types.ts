@@ -1,48 +1,28 @@
-export type VisualNovelRESTResponse = {
-    more: boolean,
-    results: [
-    ]
-}
-
-export type VNRESTResult = {
-    id: string
-    title: string,
-    original: string,
-    description: string,
-    released: string,
-    rating: number,
-    image: Image,
-    va: Va[]
-    screenshots: Image[]
-}
-
-type Va = {
-    character: Character;
-}
-
 export type VisualNovel = {
     id: string; // example: v3221
     title: string;
-    original: string; // Title in the original language
+    title_ja: string | null; // Title in Japanese
     description: string;
     released: string; // yyyy-mm-dd
     rating: number; // score between 0-100
-    image: Image;
+    image: Image | null;
     screenshots: Image[]; // can be empty if none exist
-    characters: Character[];
 }
-
-
 
 export type Image = {
     thumbnail?: string;
     url: string;
     sexual: number;
-} | null;
+};
 
 export type Character = {
     id: string;
     name: string;
+    name_original:string | null;
     sex: string;
     image: Image;
+    role: Role;
+    isSpoiler: boolean;
 }
+
+export type Role = "main" | "primary" | "side" | "appears" | "unknown"
