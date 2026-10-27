@@ -105,8 +105,10 @@ body {
 /*=====================================*/
 /*========= Screenshots ==========*/
 .screenshots-grid {
-    display: flex;
-    flex-wrap: wrap;
+    overflow: hidden;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 160px);
     gap: 1.25rem;
     justify-content: center;
     transition: ease-in-out 200ms;
