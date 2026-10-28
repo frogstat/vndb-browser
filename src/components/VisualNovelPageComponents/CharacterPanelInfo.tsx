@@ -25,7 +25,9 @@ function CharacterPanelInfo({fullCharacter}: { fullCharacter: FullCharacter }) {
             </div>
             <div className="all-traits">
                 {fullCharacter.traits &&
-                    Object.entries(fullCharacter.traits).map(([name, traits]) =>
+                    Object.entries(fullCharacter.traits)
+                        .filter(k => !k[0].toLowerCase().includes("sexual"))
+                        .map(([name, traits]) =>
                         <div key={name} className="trait-category">
                             <p>{name}</p>
                             <div className="traits">
