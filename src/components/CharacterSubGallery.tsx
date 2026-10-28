@@ -5,10 +5,12 @@ import {useState} from "react";
 type CharacterSubGalleryProps = {
     role: string
     characters: Character[];
+    setSelectedCharacter: (character: Character) => void;
 }
 
-function CharacterGallery({role, characters}: CharacterSubGalleryProps) {
+function CharacterGallery({role, characters, setSelectedCharacter}: CharacterSubGalleryProps) {
     const [hidden, setHidden] = useState<boolean>(false)
+
 
     return (
         <div className="character-subgallery">
@@ -20,9 +22,8 @@ function CharacterGallery({role, characters}: CharacterSubGalleryProps) {
             <div className={`character-grid-wrapper ${hidden ? "hidden" : ""}`}>
                 <div className="character-grid">
                     {characters
-                        .filter(c => !c.isSpoiler)
                         .map((character, index) =>
-                        <CharacterCard key={index} character={character}/>
+                        <CharacterCard key={index} character={character} setSelectedCharacter={setSelectedCharacter}/>
                     )}
                 </div>
 

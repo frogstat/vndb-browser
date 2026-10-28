@@ -20,7 +20,7 @@ export type Character = {
     name: string;
     name_original:string | null;
     sex: string;
-    image: Image;
+    image: Image | null;
     role: Role;
     isSpoiler: boolean;
 }

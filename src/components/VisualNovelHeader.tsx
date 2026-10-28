@@ -14,7 +14,9 @@ function VisualNovelHeader({vn, setSelectedImage}: VisualNovelHeaderProps) {
             {(vn.title_ja && vn.title_ja !== vn.title) && <h1>{vn.title_ja}</h1>}
             <p>{vn.description}</p>
             <div className="cover-image-container">
-                <ImageWrapper image={vn.image} selectImage={setSelectedImage}/>
+                <ImageWrapper
+                    image={vn.image}
+                    handleClick={() => vn.image ? setSelectedImage(vn.image) : null}/>
             </div>
         </div>
     )

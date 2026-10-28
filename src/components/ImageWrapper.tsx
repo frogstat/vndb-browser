@@ -4,19 +4,19 @@ import type {Image} from "../types.ts";
 
 type VisualNovelCoverProps = {
     image: Image | null;
-    selectImage: ((image: Image) => void) | null;
+    handleClick: (() => void) | null;
 }
 
-function ImageWrapper({image, selectImage}: VisualNovelCoverProps) {
+function ImageWrapper({image, handleClick}: VisualNovelCoverProps) {
     const [isBlurred, setIsBlurred] = useState<boolean>(image?.isSexual ?? false);
 
-    function handleClick() {
+    function onImageClick() {
         if (isBlurred) {
             setIsBlurred(false);
             return;
         }
-        if (image && selectImage) {
-            selectImage(image);
+        if (handleClick) {
+            handleClick();
         }
     }
 
@@ -24,7 +24,7 @@ function ImageWrapper({image, selectImage}: VisualNovelCoverProps) {
         <div className="image-container">
             <img
                 className={isBlurred ? "blurred" : ""}
-                onClick={() => handleClick()}
+                onClick={() => onImageClick()}
                 src={image?.thumbnail ?? image?.url ?? fallback}
                 alt="image"
             />

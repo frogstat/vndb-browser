@@ -65,6 +65,10 @@ body {
     border: black solid 1px;
     height: 330px;
     margin-bottom: 40px;
+    cursor: pointer;
+    &:hover {
+        background-color: #efe2cd;
+    }
 }
 
 .character-card p {
@@ -140,4 +144,10 @@ body {
     border: 1px solid black;
     overflow: hidden;
     padding: 20px;
+}
+
+/*========CHARACTER OVERLAY============*/
+
+.character-panel{
+    width: 600px;
 }

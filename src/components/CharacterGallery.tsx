@@ -1,51 +1,68 @@
 import type {Character} from "../types.ts";
-import {useEffect, useState} from "react";
 import CharacterSubGallery from "./CharacterSubGallery.tsx";
-import {fetchCharacters} from "../api/vndbApi.ts";
-
+import {createPortal} from "react-dom";
+import {useCharacterGallery} from "../hooks/useCharacterGallery.ts";
+import CharacterPanel from "./CharacterPanel.tsx";
 
 type CharacterGalleryProps = {
     visualNovelId: string;
+    showSpoilers: boolean;
 }
 
-function CharacterGallery({visualNovelId}: CharacterGalleryProps) {
+function CharacterGallery({visualNovelId, showSpoilers}: CharacterGalleryProps) {
 
-    const [characters, setCharacters] = useState<Character[] | null>([]);
-
-    useEffect(() => {
-        let cancelled = false;
-        setCharacters(null);
-        fetchCharacters(visualNovelId)
-            .then(data => {
-                if (!cancelled) {
-                    setCharacters(data)
-                }
-            });
-        return () => {cancelled = true};
-    }, [visualNovelId]);
+    const {
+        characters,
+        selectedCharacter,
+        setSelectedCharacter
+    } = useCharacterGallery(visualNovelId);
 
 
     function createSubGallery(role: string, characters: Character[]) {
-        if (characters.length === 0) {
+        if (!showSpoilers && characters.filter(c => !c.isSpoiler).length === 0) {
+            return null;
+        }
+        if (showSpoilers && characters.length === 0) {
             return null;
         }
         return (
-            <CharacterSubGallery role={role} characters={characters}/>
+            <CharacterSubGallery
+                role={role}
+                characters={showSpoilers ? characters : characters.filter(c => !c.isSpoiler)}
+                setSelectedCharacter={setSelectedCharacter}
+            />
         )
     }
 
+    if (!characters) {
+        return (
+            <div className="character-gallery">
+                <h1>Characters</h1>
+            </div>
+        );
+    }
 
     return (
-        <div className="character-gallery">
-            <h1>Characters</h1>
-            {characters && <div className="character-groups">
-                {createSubGallery("Main Characters", characters.filter(character => character.role === "main"))}
-                {createSubGallery("Primary Characters", characters.filter(character => character.role === "primary"))}
-                {createSubGallery("Side Characters", characters.filter(character => character.role === "side"))}
-                {createSubGallery("Makes an appearance", characters.filter(character => character.role === "appears"))}
-                {createSubGallery("Unknown", characters.filter(character => character.role === "unknown"))}
-            </div>}
-        </div>
+        <>
+            <div className="character-gallery">
+                <h1>Characters</h1>
+                <div className="character-groups">
+                    {createSubGallery("Main Characters", characters.filter(character => character.role === "main"))}
+                    {createSubGallery("Primary Characters", characters.filter(character => character.role === "primary"))}
+                    {createSubGallery("Side Characters", characters.filter(character => character.role === "side"))}
+                    {createSubGallery("Makes an appearance", characters.filter(character => character.role === "appears"))}
+                    {createSubGallery("Unknown", characters.filter(character => character.role === "unknown"))}
+                </div>
+            </div>
+            {selectedCharacter &&
+                createPortal(
+                    <CharacterPanel
+                        selectedCharacter={selectedCharacter}
+                        unselectCharacter={() => setSelectedCharacter(null)}/>
+                    , document.body
+                )
+            }
+        </>
     )
 }
 

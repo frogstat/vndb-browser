@@ -1,11 +1,21 @@
 import type {Character} from "../types.ts";
 import ImageWrapper from "./ImageWrapper.tsx";
 
-function CharacterCard({character}: { character: Character }) {
+type CharacterCardProps = {
+    character: Character;
+    setSelectedCharacter: (character: Character) => void;
+}
+
+function CharacterCard({character, setSelectedCharacter}: CharacterCardProps) {
+
+    function selectCharacter() {
+        setSelectedCharacter(character);
+    }
+
     return (
-        <div className="character-card">
-            <div className="character-card-image-container">
-                <ImageWrapper image={character.image} selectImage={null} />
+        <div className="character-card" onClick={() => selectCharacter()}>
+            <div className="character-card-image-container" onClick={e => e.stopPropagation()}>
+                <ImageWrapper image={character.image} handleClick={selectCharacter} />
             </div>
             <p>{character.name}</p>
             {(character.name_original && character.name_original !== character.name) && <p>{character.name_original}</p>}
