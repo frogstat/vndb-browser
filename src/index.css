@@ -149,5 +149,84 @@ body {
 /*========CHARACTER OVERLAY============*/
 
 .character-panel{
-    width: 600px;
+    width: 40vw;
+    min-width: 800px;
+    height: 80vh;
+    border: black solid 1px;
+    background-color: rgb(255 245 236 / 0.9);
+    backdrop-filter: blur(5px);
+    padding: 20px;
+}
+
+.character-panel-body{
+    display: grid;
+    grid-template-columns: 30% auto;
+    gap: 50px;
+    height: 100%;
+}
+
+.character-panel-image-container {
+    width: 100%;
+    img{
+        border: black solid 1px;
+        width: 100%;
+    }
+}
+.character-panel-character-info{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: scroll;
+    max-height: 95%;
+}
+
+.character-panel-character-info p {
+    margin: 0;
+}
+.name-large{
+    font-size: 40px;
+}
+.name-original{
+    font-size: 20px;
+    font-style: italic;
+}
+
+.character-panel-names{
+    border-bottom: black solid 1px;
+    padding-bottom: 20px;
+}
+
+.character-panel-sex-height-location{
+    display: flex;
+    gap: 50px;
+    border-bottom: black solid 1px;
+    padding-bottom: 20px;
+}
+
+.character-panel-description{
+    border-bottom: black solid 1px;
+    padding-bottom: 20px;
+}
+
+/*=========Traits=========*/
+.all-traits{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.trait-category{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.traits{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    span {
+        border: black solid 1px;
+        padding: 5px;
+    }
 }

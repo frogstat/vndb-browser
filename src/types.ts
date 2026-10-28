@@ -1,3 +1,4 @@
+
 export type VisualNovel = {
     id: string; // example: v3221
     title: string;
@@ -18,11 +19,30 @@ export type Image = {
 export type Character = {
     id: string;
     name: string;
-    name_original:string | null;
+    name_original: string | null;
     sex: string;
     image: Image | null;
     role: Role;
     isSpoiler: boolean;
 }
 
+export type FullCharacter = {
+    id: string,
+    name: string,
+    name_original: string | null,
+    aliases: string | null,
+    description: string | null,
+    height: string | null,
+    age: number | null,
+    sex: string,
+    traits: Record<string, Trait[]>,
+}
+
 export type Role = "main" | "primary" | "side" | "appears" | "unknown"
+
+export type Trait = {
+    group_name: string;
+    id: string;
+    name: string;
+    isSpoiler: boolean;
+}

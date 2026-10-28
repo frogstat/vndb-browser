@@ -1,5 +1,12 @@
-import type {Character, Image, Role, VisualNovel} from "../types.ts";
-import type {CharactersApi, CharacterResultsApi, ImageResponse, VisualNovelApi} from "./apiTypes.ts";
+import type {Character, FullCharacter, Image, Role, Trait, VisualNovel} from "../types.ts";
+import type {
+    CharacterResultsApi,
+    CharactersApi,
+    FullCharacterApi,
+    ImageResponse,
+    TraitApi,
+    VisualNovelApi,
+} from "./apiTypes.ts";
 
 const VNDB_API_URL = "https://api.vndb.org/kana"
 
@@ -54,8 +61,45 @@ export async function fetchCharacters(vnId: string): Promise<Character[] | null>
 
 }
 
+export async function fetchCharacter(id: string):Promise<FullCharacter | null> {
+    const options = {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            filters: ["id", "=", id],
+            fields: "id, name, original, aliases, description, height, age, sex, traits{name,group_name,spoiler}",
+            results: 1,
+        })
+    };
+
+    const res = await fetch(`${VNDB_API_URL}/character`,options);
+    if(!res.ok) {
+        throw new Error(`VNDB ${res.status}: ${await res.text()}`);
+    }
+    const data: FullCharacterApi = await res.json();
+    return parseFullCharacterResponse(data);
+}
+
 /// -------------- parsers
 
+
+function parseFullCharacterResponse(data: FullCharacterApi):FullCharacter | null {
+    if (!data.results || !data.results.length) {
+        return null;
+    }
+    const character = data.results[0];
+    return {
+        id: character.id,
+        name: character.name,
+        name_original: character.original ?? null,
+        aliases: character.aliases.length ? character.aliases.join(",") : null,
+        description: character.description ?? null,
+        height: character.height ? `${character.height}cm` : null,
+        age: character.age ?? null,
+        sex: resolveSex(character.sex),
+        traits: parseTraits(character.traits)
+    }
+}
 
 function parseCharactersResponse(characters: CharacterResultsApi[], vnId: string): Character[] | null {
     if (!characters || !characters.length) {
@@ -65,18 +109,11 @@ function parseCharactersResponse(characters: CharacterResultsApi[], vnId: string
         const role: Role = character.vns.find((v: any) => v.id === vnId)?.role ?? "unknown";
         const isSpoiler: boolean = character.vns.find((v: any) => v.id === vnId)?.spoiler ?? 0 > 0;
 
-        let sex;
-        if (character.sex) {
-            sex = character.sex[0] === "m" ? "male" : character.sex[0] === "f" ? "female" : "unknown";
-        } else {
-            sex = "unknown";
-        }
-
         return {
             id: character.id,
             name: character.name,
             name_original: character.original ?? null,
-            sex: sex,
+            sex: resolveSex(character.sex),
             image: parseImageResponse(character.image),
             role: role,
             isSpoiler: isSpoiler
@@ -113,5 +150,31 @@ function parseImageResponse(imageResponse: ImageResponse): Image {
         url: imageResponse?.url,
         isSexual: imageResponse?.sexual ? imageResponse.sexual > 0.5 : false
     }
+}
 
+function resolveSex(inputSex: string[] | null){
+    let sex;
+    if (inputSex) {
+        sex = inputSex[0] === "m" ? "male" : inputSex[0] === "f" ? "female" : "unknown";
+    } else {
+        sex = "unknown";
+    }
+    return sex;
+}
+
+function parseTraits(traits: TraitApi[]):Record<string, Trait[]>{
+    const mappedTraits = traits.map((trait: TraitApi) => {
+        return {
+            group_name: trait.group_name,
+            id: trait.id,
+            name: trait.name,
+            isSpoiler: trait.spoiler > 0,
+        }
+    })
+
+
+    return mappedTraits.reduce<Record<string, Trait[]>>((acc, trait) => {
+        (acc[trait.group_name] ??= []).push(trait);
+        return acc;
+    }, {});
 }

@@ -1,4 +1,4 @@
-import type {Image} from "../types.ts";
+import type {Image, Trait} from "../types.ts";
 
 export type VisualNovelApi = {
     more: boolean;
@@ -26,7 +26,7 @@ export type CharacterResultsApi = {
     id: string;
     name: string;
     original?: string;
-    sex: [string, string];
+    sex: [string, string] | null;
     image: ImageResponse;
     vns: {
         id: string;
@@ -39,4 +39,26 @@ export type ImageResponse = {
     thumbnail?: string;
     url: string;
     sexual: number;
+}
+
+export type FullCharacterApi = {
+    more: boolean;
+    results: {
+        id: string;
+        name: string;
+        original: string | null;
+        aliases: string[];
+        description: string | null;
+        height: number | null;
+        age: number | null;
+        sex: [string, string];
+        traits: TraitApi[];
+    }[];
+}
+
+export type TraitApi = {
+    group_name: string;
+    id: string;
+    name: string;
+    spoiler: number;
 }
