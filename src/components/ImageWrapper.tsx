@@ -8,7 +8,7 @@ type VisualNovelCoverProps = {
 }
 
 function ImageWrapper({image, selectImage}: VisualNovelCoverProps) {
-    const [isBlurred, setIsBlurred] = useState<boolean>((image?.sexual ?? 0) >= 0.6);
+    const [isBlurred, setIsBlurred] = useState<boolean>(image?.isSexual ?? false);
 
     function handleClick() {
         if (isBlurred) {

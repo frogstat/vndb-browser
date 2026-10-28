@@ -13,25 +13,14 @@ type VisualNovelApi = {
         description: string;
         released: string;
         rating: number;
-        image: Image;
+        image: ImageResponse;
         screenshots: Image[];
     }[];
 };
 
 type CharactersApi = {
     more: boolean;
-    results: {
-        id: string;
-        name: string;
-        original?: string;
-        sex: [string, string];
-        image: Image;
-        vns: {
-            id: string;
-            role: string;
-            spoiler: number;
-        }[]
-    }[]
+    results: CharactersResultsApi[]
 };
 
 type CharactersResultsApi = {
@@ -39,33 +28,21 @@ type CharactersResultsApi = {
     name: string;
     original?: string;
     sex: [string, string];
-    image: Image;
+    image: ImageResponse;
     vns: {
         id: string;
         role: string;
+        spoiler: number;
     }[]
 }[];
 
-function parseVisualNovelResponse(data: VisualNovelApi): VisualNovel | null {
-    const results = data.results;
-
-    if (!results || !results.length) {
-        return null;
-    }
-    const vn = results[0];
-    return {
-        id: vn.id,
-        title: vn.title,
-        title_ja: vn.titles.find(title => title.lang === "ja")?.title ?? null,
-        description: vn.description,
-        released: vn.released,
-        rating: vn.rating,
-        image: vn.image,
-        screenshots: vn.screenshots ?? []
-    }
+type ImageResponse = {
+    thumbnail?: string;
+    url: string;
+    sexual: number;
 }
 
-
+// ------------------- API CALLS
 export async function fetchVisualNovel(id: string): Promise<VisualNovel | null> {
     const options = {
         method: 'POST',
@@ -86,39 +63,8 @@ export async function fetchVisualNovel(id: string): Promise<VisualNovel | null> 
     }
 }
 
-
-function parseCharactersResponse(characters: CharactersResultsApi, vnId: string): Character[] | null {
-    if (!characters || !characters.length) {
-        return null;
-    }
-
-    return characters.map((character: any) => {
-        const role: Role = character.vns.find((v: any) => v.id === vnId)?.role ?? "unknown";
-        const isSpoiler: boolean = character.vns.find((v: any) => v.id === vnId)?.spoiler ?? 0 > 0;
-
-        let sex;
-        if (character.sex) {
-            sex = character.sex[0] === "m" ? "male" : character.sex[0] === "f" ? "female" : "unknown";
-        } else {
-            sex = "unknown";
-        }
-
-
-        return {
-            id: character.id,
-            name: character.name,
-            name_original: character.original ?? null,
-            sex: sex,
-            image: character.image,
-            role: role,
-            isSpoiler: isSpoiler
-        }
-    });
-}
-
-
 export async function fetchCharacters(vnId: string): Promise<Character[] | null> {
-    const allCharacters: CharactersResultsApi = [];
+    const allCharacters: CharactersResultsApi[] = [];
     for (let i = 1; ; i++) {
         const res = await fetch(`${VNDB_API_URL}/character`, {
             method: 'POST',
@@ -144,5 +90,67 @@ export async function fetchCharacters(vnId: string): Promise<Character[] | null>
     }
 
     return parseCharactersResponse(allCharacters, vnId);
+
+}
+
+/// -------------- parsers
+
+
+function parseCharactersResponse(characters: CharactersResultsApi[], vnId: string): Character[] | null {
+    if (!characters || !characters.length) {
+        return null;
+    }
+    return characters.map((character: any) => {
+        const role: Role = character.vns.find((v: any) => v.id === vnId)?.role ?? "unknown";
+        const isSpoiler: boolean = character.vns.find((v: any) => v.id === vnId)?.spoiler ?? 0 > 0;
+
+        let sex;
+        if (character.sex) {
+            sex = character.sex[0] === "m" ? "male" : character.sex[0] === "f" ? "female" : "unknown";
+        } else {
+            sex = "unknown";
+        }
+
+        return {
+            id: character.id,
+            name: character.name,
+            name_original: character.original ?? null,
+            sex: sex,
+            image: parseImageResponse(character.image),
+            role: role,
+            isSpoiler: isSpoiler
+        }
+    });
+}
+
+
+function parseVisualNovelResponse(data: VisualNovelApi): VisualNovel | null {
+    const results = data.results;
+
+    if (!results || !results.length) {
+        return null;
+    }
+    const vn = results[0];
+    return {
+        id: vn.id,
+        title: vn.title,
+        title_ja: vn.titles.find(title => title.lang === "ja")?.title ?? null,
+        description: vn.description,
+        released: vn.released,
+        rating: vn.rating,
+        image: vn.image ? parseImageResponse(vn.image) : null,
+        screenshots:
+            vn.screenshots.length > 0
+                ? vn.screenshots.map((screenshot: any) => parseImageResponse(screenshot))
+                : []
+    }
+}
+
+function parseImageResponse(imageResponse: ImageResponse): Image {
+    return {
+        thumbnail: imageResponse?.thumbnail,
+        url: imageResponse?.url,
+        isSexual: imageResponse?.sexual ? imageResponse.sexual > 0.5 : false
+    }
 
 }

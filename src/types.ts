@@ -12,7 +12,7 @@ export type VisualNovel = {
 export type Image = {
     thumbnail?: string;
     url: string;
-    sexual: number;
+    isSexual: boolean;
 };
 
 export type Character = {
