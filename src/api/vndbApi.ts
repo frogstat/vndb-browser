@@ -1,11 +1,11 @@
-import type {Character, FullCharacter, Image, Role, Trait, VisualNovel} from "../types.ts";
+import type {Character, FullCharacter, Image, Role, Trait, VisualNovel, VisualNovelCardResult} from "../types.ts";
 import type {
     CharacterResultsApi,
     CharactersApi,
     FullCharacterApi,
     ImageResponse,
     TraitApi,
-    VisualNovelApi,
+    VisualNovelApi, VisualNovelSearch, VisualNovelSearchResult,
 } from "./apiTypes.ts";
 
 const VNDB_API_URL = "https://api.vndb.org/kana"
@@ -61,7 +61,7 @@ export async function fetchCharacters(vnId: string): Promise<Character[] | null>
 
 }
 
-export async function fetchCharacter(id: string):Promise<FullCharacter | null> {
+export async function fetchCharacter(id: string): Promise<FullCharacter | null> {
     const options = {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -72,18 +72,46 @@ export async function fetchCharacter(id: string):Promise<FullCharacter | null> {
         })
     };
 
-    const res = await fetch(`${VNDB_API_URL}/character`,options);
-    if(!res.ok) {
+    const res = await fetch(`${VNDB_API_URL}/character`, options);
+    if (!res.ok) {
         throw new Error(`VNDB ${res.status}: ${await res.text()}`);
     }
     const data: FullCharacterApi = await res.json();
     return parseFullCharacterResponse(data);
 }
 
+const idRegex: RegExp = /^v\d+$/i;
+
+export async function searchVisualNovel(query: string):Promise<VisualNovelCardResult[]> {
+    const filters = idRegex.test("Hello") ? ["id", "=", query] : ["search", "=", query];
+
+    const res = await fetch(`${VNDB_API_URL}/vn`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            filters: filters,
+            fields: "id, title, image{thumbnail, url, sexual}",
+            results: 30
+        })
+    });
+
+    if (!res.ok){
+        throw new Error(`VNDB ${res.status}: ${await res.text()}`);
+    }
+    const data:VisualNovelSearch = await res.json();
+    return data.results.map((entry: VisualNovelSearchResult)=> {
+        return {
+            id: entry.id,
+            title: entry.title,
+            image: entry.image ? parseImageResponse(entry.image) : null,
+        }
+    })
+}
+
 /// -------------- parsers
 
 
-function parseFullCharacterResponse(data: FullCharacterApi):FullCharacter | null {
+function parseFullCharacterResponse(data: FullCharacterApi): FullCharacter | null {
     if (!data.results || !data.results.length) {
         return null;
     }
@@ -152,7 +180,7 @@ function parseImageResponse(imageResponse: ImageResponse): Image {
     }
 }
 
-function resolveSex(inputSex: string[] | null){
+function resolveSex(inputSex: string[] | null) {
     let sex;
     if (inputSex) {
         sex = inputSex[0] === "m" ? "male" : inputSex[0] === "f" ? "female" : "unknown";
@@ -162,7 +190,7 @@ function resolveSex(inputSex: string[] | null){
     return sex;
 }
 
-function parseTraits(traits: TraitApi[]):Record<string, Trait[]>{
+function parseTraits(traits: TraitApi[]): Record<string, Trait[]> {
     const mappedTraits = traits.map((trait: TraitApi) => {
         return {
             group_name: trait.group_name,

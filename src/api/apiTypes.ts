@@ -62,3 +62,14 @@ export type TraitApi = {
     name: string;
     spoiler: number;
 }
+
+export type VisualNovelSearch = {
+    more: boolean;
+    results: VisualNovelSearchResult[]
+}
+
+export type VisualNovelSearchResult = {
+    id: string;
+    title: string;
+    image: ImageResponse;
+}

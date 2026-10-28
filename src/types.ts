@@ -46,3 +46,9 @@ export type Trait = {
     name: string;
     isSpoiler: boolean;
 }
+
+export type VisualNovelCardResult = {
+    id: string;
+    title: string;
+    image: Image | null;
+}

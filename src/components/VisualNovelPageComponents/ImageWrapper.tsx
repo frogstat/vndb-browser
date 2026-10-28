@@ -21,7 +21,7 @@ function ImageWrapper({image, handleClick}: VisualNovelCoverProps) {
     }
 
     return (
-        <div className="image-container">
+        <div className="image-container" onClick={e => e.stopPropagation()}>
             <img
                 className={isBlurred ? "blurred" : ""}
                 onClick={() => onImageClick()}

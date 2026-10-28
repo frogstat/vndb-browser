@@ -1,12 +1,17 @@
 //import { StrictMode } from 'react'
 import {createRoot} from 'react-dom/client'
 import VisualNovelPage from "./components/VisualNovelPage.tsx";
-import {createBrowserRouter, RouterProvider, useLoaderData} from "react-router-dom";
-import './index.css'
+import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import {fetchVisualNovel} from "./api/vndbApi.ts";
-import NotFound from "./components/subcomponents/NotFound.tsx";
+import NotFound from "./components/VisualNovelPageComponents/NotFound.tsx";
+import Search from "./components/Search.tsx";
+import './index.css'
 
 const router = createBrowserRouter([
+    {
+      path:"/",
+      element: <Search/>
+    },
     {
         path: '/vn/:id?',
         loader: async ({params}) => {
