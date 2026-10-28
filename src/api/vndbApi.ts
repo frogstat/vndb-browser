@@ -1,46 +1,7 @@
 import type {Character, Image, Role, VisualNovel} from "../types.ts";
+import type {CharactersApi, CharacterResultsApi, ImageResponse, VisualNovelApi} from "./apiTypes.ts";
 
 const VNDB_API_URL = "https://api.vndb.org/kana"
-type VisualNovelApi = {
-    more: boolean;
-    results: {
-        id: string;
-        title: string;
-        titles: {
-            lang: string;
-            title: string;
-        }[];
-        description: string;
-        released: string;
-        rating: number;
-        image: ImageResponse;
-        screenshots: Image[];
-    }[];
-};
-
-type CharactersApi = {
-    more: boolean;
-    results: CharactersResultsApi[]
-};
-
-type CharactersResultsApi = {
-    id: string;
-    name: string;
-    original?: string;
-    sex: [string, string];
-    image: ImageResponse;
-    vns: {
-        id: string;
-        role: string;
-        spoiler: number;
-    }[]
-}[];
-
-type ImageResponse = {
-    thumbnail?: string;
-    url: string;
-    sexual: number;
-}
 
 // ------------------- API CALLS
 export async function fetchVisualNovel(id: string): Promise<VisualNovel | null> {
@@ -64,7 +25,7 @@ export async function fetchVisualNovel(id: string): Promise<VisualNovel | null> 
 }
 
 export async function fetchCharacters(vnId: string): Promise<Character[] | null> {
-    const allCharacters: CharactersResultsApi[] = [];
+    const allCharacters: CharacterResultsApi[] = [];
     for (let i = 1; ; i++) {
         const res = await fetch(`${VNDB_API_URL}/character`, {
             method: 'POST',
@@ -96,7 +57,7 @@ export async function fetchCharacters(vnId: string): Promise<Character[] | null>
 /// -------------- parsers
 
 
-function parseCharactersResponse(characters: CharactersResultsApi[], vnId: string): Character[] | null {
+function parseCharactersResponse(characters: CharacterResultsApi[], vnId: string): Character[] | null {
     if (!characters || !characters.length) {
         return null;
     }
