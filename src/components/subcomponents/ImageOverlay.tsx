@@ -1,4 +1,4 @@
-import type {Image} from "../types.ts";
+import type {Image} from "../../types.ts";
 
 function ImageOverlay({image, disableOverlay}: {image:Image, disableOverlay:() => void}) {
 

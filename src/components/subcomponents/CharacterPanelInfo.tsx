@@ -1,4 +1,4 @@
-import type {FullCharacter} from "../types.ts";
+import type {FullCharacter} from "../../types.ts";
 
 function CharacterPanelInfo({fullCharacter}: { fullCharacter: FullCharacter }) {
 

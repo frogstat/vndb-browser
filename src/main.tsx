@@ -4,7 +4,7 @@ import VisualNovelPage from "./components/VisualNovelPage.tsx";
 import {createBrowserRouter, RouterProvider, useLoaderData} from "react-router-dom";
 import './index.css'
 import {fetchVisualNovel} from "./api/vndbApi.ts";
-import NotFound from "./components/NotFound.tsx";
+import NotFound from "./components/subcomponents/NotFound.tsx";
 
 const router = createBrowserRouter([
     {

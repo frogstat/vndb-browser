@@ -1,5 +1,5 @@
 import ImageWrapper from "./ImageWrapper.tsx";
-import type {Image, VisualNovel} from "../types.ts";
+import type {Image, VisualNovel} from "../../types.ts";
 
 type VisualNovelHeaderProps = {
     setSelectedImage: (image: Image) => void;

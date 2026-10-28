@@ -1,4 +1,4 @@
-import errorImage from "../assets/pepehands.png"
+import errorImage from "../../assets/pepehands.png"
 import { useRouteError } from "react-router-dom";
 
 function NotFound() {

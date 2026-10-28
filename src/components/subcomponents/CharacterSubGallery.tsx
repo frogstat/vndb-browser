@@ -1,4 +1,4 @@
-import type {Character} from "../types.ts";
+import type {Character} from "../../types.ts";
 import CharacterCard from "./CharacterCard.tsx";
 import {useState} from "react";
 

@@ -1,6 +1,6 @@
-import fallback from "../assets/fallback_character.png";
-import type {Character} from "../types.ts";
-import {useCharacterPanel} from "../hooks/useCharacterPanel.ts";
+import fallback from "../../assets/fallback_character.png";
+import type {Character} from "../../types.ts";
+import {useCharacterPanel} from "../../hooks/useCharacterPanel.ts";
 import CharacterPanelInfo from "./CharacterPanelInfo.tsx";
 
 type CharacterPanelProps = {

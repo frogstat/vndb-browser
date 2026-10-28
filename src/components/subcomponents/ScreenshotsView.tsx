@@ -1,4 +1,4 @@
-import type {Image} from "../types.ts";
+import type {Image} from "../../types.ts";
 import ImageWrapper from "./ImageWrapper.tsx";
 
 type ScreenshotsProps = {

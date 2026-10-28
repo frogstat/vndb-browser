@@ -1,6 +1,6 @@
-import fallback from "../assets/fallback_character.png";
+import fallback from "../../assets/fallback_character.png";
 import {useState} from "react";
-import type {Image} from "../types.ts";
+import type {Image} from "../../types.ts";
 
 type VisualNovelCoverProps = {
     image: Image | null;

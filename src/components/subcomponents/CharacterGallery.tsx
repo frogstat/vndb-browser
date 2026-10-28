@@ -1,7 +1,7 @@
-import type {Character} from "../types.ts";
+import type {Character} from "../../types.ts";
 import CharacterSubGallery from "./CharacterSubGallery.tsx";
 import {createPortal} from "react-dom";
-import {useCharacterGallery} from "../hooks/useCharacterGallery.ts";
+import {useCharacterGallery} from "../../hooks/useCharacterGallery.ts";
 import CharacterPanel from "./CharacterPanel.tsx";
 
 type CharacterGalleryProps = {

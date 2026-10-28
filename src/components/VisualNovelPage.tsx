@@ -1,9 +1,9 @@
-import CharacterGallery from "./CharacterGallery.tsx";
-import VisualNovelHeader from "./VisualNovelHeader.tsx";
+import CharacterGallery from "./subcomponents/CharacterGallery.tsx";
+import VisualNovelHeader from "./subcomponents/VisualNovelHeader.tsx";
 import type {Image, VisualNovel} from "../types.ts";
 import {useLoaderData} from "react-router-dom";
-import ImageOverlay from "./ImageOverlay.tsx";
-import ScreenshotsView from "./ScreenshotsView.tsx";
+import ImageOverlay from "./subcomponents/ImageOverlay.tsx";
+import ScreenshotsView from "./subcomponents/ScreenshotsView.tsx";
 import {useVisualNovelOptions} from "../hooks/useVisualNovelOptions.ts";
 
 function VisualNovelPage() {
