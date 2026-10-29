@@ -1,41 +1,82 @@
 import {type SyntheticEvent, useEffect, useState} from "react";
 import {searchVisualNovel} from "../api/vndbApi.ts";
-import type {VisualNovelSearchResult} from "../api/apiTypes.ts";
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate, useSearchParams} from "react-router-dom";
 import type {VisualNovelCardResult} from "../types.ts";
 import ImageWrapper from "./VisualNovelPageComponents/ImageWrapper.tsx";
 
 function Search() {
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [isLoading, setIsLoading] = useState(false);
+
+
+
 
     function handleClick(id: string) {
         navigate(`/vn/${id}`);
     }
 
-    useEffect(() => {
-        const storedQuery = sessionStorage.getItem("vndb-browser-query");
-        if (!storedQuery) {
-            return;
-        }
-        searchVisualNovel(storedQuery)
-            .then(res => {
-                setResults(res)
-            });
-    }, []);
 
-    const [query, setQuery] = useState<string>("");
-    const [results, setResults] = useState<VisualNovelCardResult[]>([]);
+    const [query, setQuery] = useState<string>(() => {
+        const param = searchParams.get("q");
+        if(param){
+            setIsLoading(true);
+            searchVisualNovel(param)
+                .then(res => {
+                    setResults(res)
+                });
+            return param;
+        }
+        return "";
+    });
+    const [results, setResults] = useState<VisualNovelCardResult[] | null>(null);
 
     function handleSearch(e: SyntheticEvent<HTMLFormElement>) {
         e.preventDefault();
 
+        setSearchParams(prev => {
+            if (query) {
+                prev.set("q", query);
+            } else {
+                prev.delete("q");
+            }
+            return prev;
+        });
+
+        setIsLoading(true);
         searchVisualNovel(query)
             .then(res => {
-                sessionStorage.setItem("vndb-browser-query", query)
-                console.log(res)
-                setQuery("")
+                    setQuery("")
                 setResults(res)
             });
+    }
+
+    useEffect(() => {
+        if(!results){
+            return;
+        }
+        setIsLoading(false);
+    }, [results]);
+
+    function resolveResultsScreen(){
+        if(results === null) {
+            return null;
+        }
+        if(isLoading){
+            return <p>Loading...</p>
+        }
+        if(!results.length){
+            return <p>No results found</p>
+        }
+        return results.map((result: VisualNovelCardResult) =>
+            <div key={result.id} onClick={() => handleClick(result.id)} className="result-card">
+                <div className="result-card-image-container">
+                    <ImageWrapper image={result.image} handleClick={() => handleClick(result.id)} />
+                </div>
+                <p>{result.title}</p>
+            </div>
+        );
+
     }
 
     return (
@@ -50,14 +91,7 @@ function Search() {
                 <button type="submit">Search</button>
             </form>
             <div className="results">
-                {results.map((result: VisualNovelCardResult) =>
-                    <div key={result.id} onClick={() => handleClick(result.id)} className="result-card">
-                        <div className="result-card-image-container">
-                            <ImageWrapper image={result.image} handleClick={() => handleClick(result.id)} />
-                        </div>
-                        <p>{result.title}</p>
-                    </div>
-                )}
+                {resolveResultsScreen()}
             </div>
         </div>
     );

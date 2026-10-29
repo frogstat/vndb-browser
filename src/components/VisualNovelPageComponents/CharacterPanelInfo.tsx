@@ -1,4 +1,5 @@
 import type {FullCharacter} from "../../types.ts";
+import Description from "./Description.tsx";
 
 function CharacterPanelInfo({fullCharacter}: { fullCharacter: FullCharacter }) {
 
@@ -21,7 +22,7 @@ function CharacterPanelInfo({fullCharacter}: { fullCharacter: FullCharacter }) {
                 </div>
             </div>
             <div className="character-panel-description">
-                <p>{fullCharacter.description ?? "No description"}</p>
+                <Description description={fullCharacter.description ?? ""}/>
             </div>
             <div className="all-traits">
                 {fullCharacter.traits &&

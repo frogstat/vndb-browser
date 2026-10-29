@@ -91,7 +91,7 @@ export async function searchVisualNovel(query: string):Promise<VisualNovelCardRe
         body: JSON.stringify({
             filters: filters,
             fields: "id, title, image{thumbnail, url, sexual}",
-            results: 30
+            results: 50
         })
     });
 
